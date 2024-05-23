@@ -1,32 +1,84 @@
-import { useState } from 'react'
+import {useEffect, useState} from 'react'
+import noteService from "./services/noteService.js";
 
 const App = () => {
-    const [persons, setPersons] = useState([
-        { name: 'Arto Hellas', number: '040-123456', id: 1 },
-        { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-        { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-        { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-    ])
+    const [persons, setPersons] = useState([])
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [filter, setFilter] = useState('')
+    const [message, setMessage] = useState({message: null, type: null})
+
+    useEffect(() => {
+        noteService.getAllNotes()
+            .then(response => {
+                setPersons(response)
+            })
+    }, []);
 
     const savePersonHandler = (event) => {
         event.preventDefault()
 
         if(persons.find(person => person.name === newName)) {
-            alert(`${newName} is already added to phonebook`)
-            return
+            const result = window.confirm(`Contact is already added to the phonebook: ${newName}. Replace the old number with a new one?`)
+
+            if(result) {
+                const person = persons.find(person => person.name === newName)
+                const changedPerson = {...person, number: newNumber}
+
+                noteService.putPerson(changedPerson)
+                    .then(response => {
+                        setPersons(persons.map(person => person.id !== changedPerson.id ? person : response))
+                    })
+                    .catch(error => {
+                        setMessage({
+                            message: `Error occurred while adding contact ${newName} to the phonebook: ${error}`,
+                            type: "error"
+                        })
+                    })
+            }
+        }
+        else{
+            const personObject = {
+                name: newName,
+                number: newNumber
+            }
+
+            noteService.createNote(personObject)
+                .then(response => {
+                    setPersons(persons.concat(response))
+                })
+                .catch(error => {
+                    setMessage({
+                        message: `Error occurred while adding contact ${newName} to the phonebook: ${error}`,
+                        type: "error"
+                    })
+                })
+
+            setNewName('')
+            setNewNumber('')
         }
 
-        const personObject = {
-            name: newName,
-            number: newNumber
-        }
+        setMessage({
+            message: `Contact ${newName} added to the phonebook`,
+            type: "success"
+        })
+    }
 
-        setPersons(persons.concat(personObject))
-        setNewName('')
-        setNewNumber('')
+    const deletePersonHandler = (id) => {
+        const response = window.confirm("Do you really want to delete this person?")
+
+        if(response) {
+            noteService.deletePerson(id)
+                .then(() => {
+                    setPersons(persons.filter(person => person.id !== id))
+                })
+                .catch(error => {
+                    setMessage({
+                        message: `Error occurred while deleting contact ${newName} from the phonebook: ${error}`,
+                        type: "error"
+                    })
+                })
+        }
     }
 
     const onChangeFilter = (event) => {
@@ -44,18 +96,73 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
-            <Filter filter={filter} onChangeFilter={onChangeFilter} />
-            <NewPerson newName={newName} newNumber={newNumber} newNameChangeHandler={onChangeNewName} newNumberChangeHandler={onChangeNewNumber} savePersonHandler={savePersonHandler} />
+
+            <Notification notification={message}/>
+
+            <Filter
+                filter={filter}
+                onChangeFilter={onChangeFilter}
+            />
+
+            <NewPerson
+                newName={newName}
+                newNumber={newNumber}
+                newNameChangeHandler={onChangeNewName}
+                newNumberChangeHandler={onChangeNewNumber}
+                savePersonHandler={savePersonHandler}
+            />
+
             <h2>Numbers</h2>
-            <ul>
-                {persons.filter(person =>
-                    person.name.toLowerCase().includes(filter.toLowerCase()))
-                        .map(person =>
-                            <li key={person.name}>{person.name} {person.number}</li>
-                        )
-                }
-            </ul>
+            <Persons
+                persons={persons}
+                filter={filter}
+                deletePersonHandler={deletePersonHandler}
+            />
         </div>
+    )
+}
+
+const Notification = ({notification}) => {
+    if(notification.message === null) {
+        return null
+    }
+
+    const styleNotification = {
+        backgroundColor: notification.type === "success" ? "green" : "red",
+        color: "white",
+    }
+    return (
+        <div style={styleNotification}>
+            {notification.message}
+        </div>
+    )
+
+}
+
+const DeletePersonButton = ({person, deletePersonHandler}) => {
+    return <button onClick={() => deletePersonHandler(person.id)} key={`delete-${person.name}`}>delete</button>
+
+}
+
+const Person = ({person}) => {
+    return <li key={person.name}>{person.name} {person.number}</li>
+}
+
+const Persons = ({persons, filter, deletePersonHandler}) => {
+    return !persons || persons.length === 0 ? <p>No persons to show</p> : (
+        filter === "" ?
+            (persons.map(person =>
+                <section key={`mappersons-${person.name}`}>
+                    <Person key={person.name} person={person} />
+                    <DeletePersonButton key={`deletebutton-${person.name}`} person={person} deletePersonHandler={deletePersonHandler}/>
+                </section>
+            )) :
+            (persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase())).map(person =>
+                <section key={`filterpersons-${person.name}`}>
+                    <Person key={person.name} person={person} deletePersonHandler={() => deletePersonHandler(person.id)}/>
+                    <DeletePersonButton key={`deletefilteredbutton-${person.name}`} person={person} deletePersonHandler={deletePersonHandler}/>
+                </section>
+            ))
     )
 }
 

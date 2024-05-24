@@ -10,7 +10,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
-    "name": "John Doe",
+    "name": "John Dode",
     "number": 30
 }
 

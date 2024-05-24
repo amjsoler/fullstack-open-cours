@@ -1,9 +1,24 @@
 const express = require('express')
 const { v4: uuidv4 } = require('uuid');
+var morgan = require('morgan')
+
 var bodyParser = require('body-parser')
 
 const app = express()
 app.use(bodyParser.json())
+
+app.use(morgan(function (tokens, req, res) {
+    console.log(req.body)
+    return [
+        tokens.method(req, res),
+        tokens.url(req, res),
+        tokens.status(req, res),
+        tokens.res(req, res, 'content-length'), '-',
+        tokens['response-time'](req, res), 'ms',
+        JSON.stringify(req.body)
+    ].join(' ')
+}))
+
 let persons = [
     {
         "id": 1,

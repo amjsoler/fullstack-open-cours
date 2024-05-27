@@ -97,6 +97,7 @@ app.delete('/api/persons/:id', (req, res) => {
     res.status(200).end()
 })
 
-app.listen(3000, () => {
-    console.log('Server is running on port 3000')
+const port = process.env.PORT || 3000
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`)
 })

@@ -1,5 +1,4 @@
 const express = require('express')
-const { v4: uuidv4 } = require('uuid');
 const cors = require('cors')
 const Person = require('./models/person')
 
@@ -78,7 +77,7 @@ app.post('/api/persons', (req, res, next) => {
 
 app.delete('/api/persons/:id', (req, res) => {
     Person.findByIdAndDelete(req.params.id)
-    .then(result => {
+    .then(() => {
         res.status(204).end()
     })
     .catch(error => {
@@ -102,6 +101,7 @@ const errorHandler = (error, request, response, next) => {
 
 app.use(errorHandler)
 
+// eslint-disable-next-line no-undef
 const port = process.env.PORT || 3000
 app.listen(port, () => {
     console.log(`Server running on port ${port}`)

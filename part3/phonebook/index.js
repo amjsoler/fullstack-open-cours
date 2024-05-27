@@ -1,11 +1,15 @@
 const express = require('express')
 const { v4: uuidv4 } = require('uuid');
+const cors = require('cors')
+
 var morgan = require('morgan')
 
 var bodyParser = require('body-parser')
 
 const app = express()
 app.use(bodyParser.json())
+
+app.use(cors())
 
 app.use(morgan(function (tokens, req, res) {
     console.log(req.body)
@@ -42,9 +46,7 @@ let persons = [
     }
 ]
 
-app.get('/', (req, res) => {
-    res.send('Hello World')
-})
+app.use(express.static('dist'))
 
 app.get('/api/persons', (req, res) => {
     res.json(persons)

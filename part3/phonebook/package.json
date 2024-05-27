@@ -4,12 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev:all": "rm -r dist && cd ../../part2/phonebook && npm run build && cp -r dist/ ../../part3/phonebook/dist && cd ../../part3/phonebook && npm run dev",
     "dev": "node --watch index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.19.2",
     "morgan": "^1.10.0",
     "uuid": "^9.0.1"

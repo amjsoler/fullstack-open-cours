@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:all": "rm -r dist && cd ../../part2/phonebook && npm run build && cp -r dist/ ../../part3/phonebook/dist && cd ../../part3/phonebook && npm run dev",
-    "dev": "node --watch index.js",
+    "dev:all": "rm -r dist || true && cd ../phonebook-ui && npm install && npm run build && cp -r dist/ ../phonebook/dist && cd ../phonebook && npm run dev",
+    "dev": "node --env-file=.env --watch index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -13,6 +13,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "mongoose": "^8.4.0",
     "morgan": "^1.10.0",
     "uuid": "^9.0.1"
   }

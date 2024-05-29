@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import userService from './services/users'
+import CreateNewBlog from "./components/NewBlog.jsx";
 
 const LoginForm = (props) => {
     return (
@@ -36,24 +37,6 @@ const LoggedInUser = (props) => {
         <button onClick={props.handleLogout}>logout</button>
         </div>
     )
-
-}
-
-const CreateNewBlog = ({newTitle, newAuthor, newUrl, setTitle, setAuthor, setUrl, handlerCreateNewBlog}) => {
-    return (
-        <form onSubmit={handlerCreateNewBlog}>
-            <div>
-                <input type="text" placeholder="Title" value={newTitle} onChange={({target}) => setTitle(target.value)}/>
-            </div>
-            <div>
-                <input type="text" placeholder="Author" value={newAuthor} onChange={({target}) => setAuthor(target.value)} />
-            </div>
-            <div>
-                <input type="text" placeholder="URL" value={newUrl} onChange={({target}) => setUrl(target.value)} />
-            </div>
-            <button type="submit">Create</button>
-        </form>
-    )
 }
 
 const Notificacion = ({message, type}) => {
@@ -73,11 +56,6 @@ const App = () => {
     const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-
-
-    const [newTitle, setNewTitle] = useState('')
-    const [newAuthor, setNewAuthor] = useState('')
-    const [newUrl, setNewUrl] = useState('')
 
     const [notification, setNotification] = useState(null)
     const [notificationType, setNotificationType] = useState(null)
@@ -146,17 +124,6 @@ const App = () => {
       localStorage.removeItem("token")
   }
 
-  const handleCreateNewBlog = (event) => {
-    event.preventDefault()
-
-    blogService.createNewPost({
-        title: newTitle,
-        author: newAuthor,
-        url: newUrl
-    })
-
-  }
-
   return (
     <div>
         <Notificacion message={notification} type={notificationType} />
@@ -176,7 +143,7 @@ const App = () => {
                 {blogs.map(blog =>
                     <Blog key={blog.id} blog={blog} />
                 )}
-                <CreateNewBlog handlerCreateNewBlog={handleCreateNewBlog} newTitle={newTitle} newAuthor={newAuthor} newUrl={newUrl} setTitle={setNewTitle} setAuthor={setNewAuthor} setUrl={setNewUrl} />
+                <CreateNewBlog />
             </>
         }
 

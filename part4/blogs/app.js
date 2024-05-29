@@ -4,7 +4,10 @@ const config = require("./utils/config");
 const cors = require('cors')
 const app = express()
 const mongoose = require('mongoose')
-const blogsRouter = require("./controllers/blogs");
+
+const blogsRouter = require("./controllers/blogs")
+const usersRouter = require("./controllers/usersController")
+
 const {requestLogger} = require("./utils/middleware");
 
 mongoose.set('strictQuery', false)
@@ -24,5 +27,6 @@ app.use(requestLogger)
 
 //Controllers
 app.use('/api/blogs', blogsRouter)
+app.use('/api/users', usersRouter)
 
 module.exports = app

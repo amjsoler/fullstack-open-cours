@@ -1,6 +1,17 @@
 import {useState} from "react";
+import PropTypes from "prop-types";
 
 const Blog = ({ blog }) => {
+
+    Blog.propTypes = {
+        blog: PropTypes.shape({
+            title: PropTypes.string.isRequired,
+            author: PropTypes.string.isRequired,
+            url: PropTypes.string.isRequired,
+            likes: PropTypes.number.isRequired
+        })
+
+    }
     const [viewFull, setViewFull] = useState(false)
 
 

@@ -3,6 +3,9 @@ import blogService from "../services/blogs.js";
 
 const CreateNewBlog = () => {
 
+    CreateNewBlog.propTypes = {
+
+    }
     const [newTitle, setNewTitle] = useState('')
     const [newAuthor, setNewAuthor] = useState('')
     const [newUrl, setNewUrl] = useState('')

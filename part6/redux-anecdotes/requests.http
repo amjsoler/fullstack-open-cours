@@ -1,0 +1,10 @@
+### POST request to example server
+GET http://localhost:3001/anecdotes
+Accept: application/json
+Content-Type: application/json
+
+{
+    "content": "If it hurts, do it more often",
+    "votes": 0
+}
+###
